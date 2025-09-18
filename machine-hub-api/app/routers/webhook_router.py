@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Optional, Dict, Any
 import json
 import logging
+import os
 from datetime import datetime
 
 from ..database import get_db
@@ -11,6 +12,10 @@ from ..auth import verify_api_key
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+def should_log():
+    """Check if logging should be enabled based on environment"""
+    return os.getenv('APP_ENV', '').lower() != 'production'
 
 
 def parse_glances_data(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -106,7 +111,8 @@ def parse_glances_data(data: Dict[str, Any]) -> Dict[str, Any]:
             parsed["uptime"] = days * 86400 + \
                 hours * 3600 + minutes * 60 + seconds
         except Exception as e:
-            logger.warning(f"Failed to parse uptime '{uptime_raw}': {e}")
+            if should_log():
+                logger.warning(f"Failed to parse uptime '{uptime_raw}': {e}")
             parsed["uptime"] = 0
     else:
         parsed["uptime"] = int(uptime_raw) if uptime_raw else 0
@@ -204,8 +210,9 @@ async def receive_glances_data(
             break
 
     if not allowed_machine:
-        logger.warning(
-            f"Webhook access denied for unregistered IPs: {ips_to_check}")
+        if should_log():
+            logger.warning(
+                f"Webhook access denied for unregistered IPs: {ips_to_check}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=f"Access denied: None of the provided IPs {ips_to_check} are registered in machines table"
@@ -227,8 +234,9 @@ async def receive_glances_data(
             machine = allowed_machine
 
         if not machine:
-            logger.warning(
-                f"Received Glances data for unknown machine: {hostname} (IP: {client_ip})")
+            if should_log():
+                logger.warning(
+                    f"Received Glances data for unknown machine: {hostname} (IP: {client_ip})")
             return {
                 "success": False,
                 "message": f"Machine not found: {hostname}",
@@ -294,8 +302,9 @@ async def receive_glances_data(
         # Update last_seen timestamp
         crud.update_machine_last_seen(db, machine.id)
 
-        logger.info(
-            f"📊 Metrics collected for machine '{machine.name}' (ID: {machine.id}) - CPU: {parsed_data.get('cpu_percent')}%, Memory: {parsed_data.get('memory_percent')}%")
+        if should_log():
+            logger.info(
+                f"📊 Metrics collected for machine '{machine.name}' (ID: {machine.id}) - CPU: {parsed_data.get('cpu_percent')}%, Memory: {parsed_data.get('memory_percent')}%")
 
         return {
             "success": True,
@@ -311,7 +320,8 @@ async def receive_glances_data(
             detail="Invalid JSON data"
         )
     except Exception as e:
-        logger.error(f"Error processing Glances webhook: {e}")
+        if should_log():
+            logger.error(f"Error processing Glances webhook: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error processing webhook data"
@@ -354,7 +364,8 @@ async def cleanup_old_snapshots(
             "cleanup_method": "by_age"
         }
     except Exception as e:
-        logger.error(f"Error cleaning up snapshots: {e}")
+        if should_log():
+            logger.error(f"Error cleaning up snapshots: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error cleaning up snapshots"
@@ -387,7 +398,8 @@ async def cleanup_snapshots_by_count(
             "cleanup_method": "by_count"
         }
     except Exception as e:
-        logger.error(f"Error cleaning up snapshots by count: {e}")
+        if should_log():
+            logger.error(f"Error cleaning up snapshots by count: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error cleaning up snapshots"

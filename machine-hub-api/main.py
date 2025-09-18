@@ -127,10 +127,15 @@ async def global_exception_handler(request, exc):
 
 if __name__ == "__main__":
     import uvicorn
+    
+    # Check if we should disable access logs in production
+    access_log = os.getenv('APP_ENV', '').lower() != 'production'
+    
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
         port=8000,
         reload=True,
-        log_level="info"
+        log_level="info",
+        access_log=access_log
     )

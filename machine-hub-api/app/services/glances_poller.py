@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 import logging
+import os
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 from sqlalchemy.orm import Session
@@ -10,6 +11,10 @@ from .. import crud, schemas
 from ..models import Machine
 
 logger = logging.getLogger(__name__)
+
+def should_log():
+    """Check if logging should be enabled based on environment"""
+    return os.getenv('APP_ENV', '').lower() != 'production'
 
 
 class GlancesPoller:
@@ -21,20 +26,23 @@ class GlancesPoller:
     async def start_polling(self):
         """Start the polling loop"""
         self.running = True
-        logger.info("🔄 Starting Glances polling service")
+        if should_log():
+            logger.info("🔄 Starting Glances polling service")
 
         while self.running:
             try:
                 await self.poll_all_machines()
                 await asyncio.sleep(self.poll_interval)
             except Exception as e:
-                logger.error(f"Error in polling loop: {e}")
+                if should_log():
+                    logger.error(f"Error in polling loop: {e}")
                 await asyncio.sleep(5)  # Short delay before retry
 
     def stop_polling(self):
         """Stop the polling loop"""
         self.running = False
-        logger.info("⏹️ Stopping Glances polling service")
+        if should_log():
+            logger.info("⏹️ Stopping Glances polling service")
 
     async def poll_all_machines(self):
         """Poll all active machines for metrics"""
@@ -42,10 +50,12 @@ class GlancesPoller:
         try:
             machines = crud.get_active_machines(db)
             if not machines:
-                logger.debug("No active machines to poll")
+                if should_log():
+                    logger.debug("No active machines to poll")
                 return
 
-            logger.info(f"📊 Polling {len(machines)} machines for metrics")
+            if should_log():
+                logger.info(f"📊 Polling {len(machines)} machines for metrics")
 
             # Create tasks for concurrent polling
             tasks = []
@@ -57,7 +67,8 @@ class GlancesPoller:
             await asyncio.gather(*tasks, return_exceptions=True)
 
         except Exception as e:
-            logger.error(f"Error polling machines: {e}")
+            if should_log():
+                logger.error(f"Error polling machines: {e}")
         finally:
             db.close()
 
@@ -65,32 +76,39 @@ class GlancesPoller:
         """Poll a single machine for Glances data"""
         try:
             glances_url = f"http://{machine.ip_address}:61208/api/4/all"
-            logger.info(
-                f"🔗 Attempting to poll {machine.name} at {glances_url}")
+            if should_log():
+                logger.info(
+                    f"🔗 Attempting to poll {machine.name} at {glances_url}")
 
             async with aiohttp.ClientSession(timeout=self.session_timeout) as session:
                 async with session.get(glances_url) as response:
                     if response.status == 200:
                         data = await response.json()
-                        logger.info(
-                            f"✅ Successfully connected to {machine.name}, processing data...")
+                        if should_log():
+                            logger.info(
+                                f"✅ Successfully connected to {machine.name}, processing data...")
                         await self.process_glances_data(db, machine, data)
 
                         # Update last_seen timestamp
                         crud.update_machine_last_seen(db, machine.id)
 
-                        logger.info(f"✅ Successfully polled {machine.name}")
+                        if should_log():
+                            logger.info(f"✅ Successfully polled {machine.name}")
                     else:
-                        logger.warning(
-                            f"❌ Failed to poll {machine.name}: HTTP {response.status}")
+                        if should_log():
+                            logger.warning(
+                                f"❌ Failed to poll {machine.name}: HTTP {response.status}")
 
         except asyncio.TimeoutError:
-            logger.warning(
-                f"⏰ Timeout polling {machine.name} at {machine.ip_address}")
+            if should_log():
+                logger.warning(
+                    f"⏰ Timeout polling {machine.name} at {machine.ip_address}")
         except aiohttp.ClientError as e:
-            logger.warning(f"🔌 Connection error polling {machine.name}: {e}")
+            if should_log():
+                logger.warning(f"🔌 Connection error polling {machine.name}: {e}")
         except Exception as e:
-            logger.error(f"💥 Unexpected error polling {machine.name}: {e}")
+            if should_log():
+                logger.error(f"💥 Unexpected error polling {machine.name}: {e}")
 
     async def process_glances_data(self, db: Session, machine: Machine, data: Dict[str, Any]):
         """Process and store Glances data for a machine"""
@@ -155,10 +173,12 @@ class GlancesPoller:
 
             # Store in database
             crud.create_system_snapshot(db, snapshot_data)
-            logger.debug(f"💾 Stored snapshot for {machine.name}")
+            if should_log():
+                logger.debug(f"💾 Stored snapshot for {machine.name}")
 
         except Exception as e:
-            logger.error(f"Error processing data for {machine.name}: {e}")
+            if should_log():
+                logger.error(f"Error processing data for {machine.name}: {e}")
 
     def parse_glances_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Parse Glances data and extract relevant metrics"""
@@ -267,7 +287,8 @@ class GlancesPoller:
                 parsed["uptime"] = days * 86400 + \
                     hours * 3600 + minutes * 60 + seconds
             except Exception as e:
-                logger.warning(f"Failed to parse uptime '{uptime_raw}': {e}")
+                if should_log():
+                    logger.warning(f"Failed to parse uptime '{uptime_raw}': {e}")
                 parsed["uptime"] = 0
         else:
             parsed["uptime"] = int(uptime_raw) if uptime_raw else 0
