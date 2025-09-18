@@ -4,10 +4,10 @@ services:
     container_name: db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-control}
-      MYSQL_USER: ${MYSQL_USER:-control}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-controlpass}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-machine-hub}
+      MYSQL_USER: ${MYSQL_USER:-machine-hub}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
     volumes:
       - db-data:/var/lib/mysql
     ports:
