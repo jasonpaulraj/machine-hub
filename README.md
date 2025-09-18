@@ -63,50 +63,10 @@ cd machine-hub
 # Copy environment files
 cp .env.example .env
 cp machine-hub-api/.env.example machine-hub-api/.env
-cp machine-hub-web/.env.example machine-hub-web/.env
+cp machine-hub-web/.env.example machine-hub-web/.env`
 ```
 
-### 2. Configure Environment
-
-Edit `.env` file:
-
-```bash
-# Port Configuration
-DB_PORT=3306
-BACKEND_PORT=8000
-FRONTEND_PORT=3000
-
-# Database Configuration
-MYSQL_PASSWORD=your_secure_database_password
-```
-
-Edit `machine-hub-api/.env` file:
-
-```bash
-# Database Configuration
-DB_HOST=db
-DB_PORT=3306
-DB_NAME=control
-DB_USER=control
-DB_PASSWORD=your_secure_database_password
-
-# JWT Secret Key
-BACKEND_SECRET_KEY=your_super_secret_jwt_key_change_in_production
-
-# Home Assistant Integration (Optional)
-HOME_ASSISTANT_URL=http://homeassistant.local:8123
-HOME_ASSISTANT_TOKEN=YOUR_HA_LONG_LIVED_TOKEN_HERE
-
-# Glances Webhook Secret (Optional)
-GLANCES_SECRET=optional_secret_for_webhook
-
-# CORS Origins
-CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
-
-SEED_SAMPLE_DATA=true
-```
-
-### 3. Build and Start
+### 2. Build and Start
 
 ```bash
 # Build and start all services
@@ -116,7 +76,7 @@ docker-compose up --build
 docker-compose up --build -d
 ```
 
-### 4. Access the Application
+### 3. Access the Application
 
 - **Web Interface**: http://localhost:3000
 - **API Documentation**: http://localhost:8000/docs
@@ -139,33 +99,6 @@ docker-compose up --build machine-hub-web
 ## 🌐 Nginx Proxy Configuration
 
 The nginx configuration handles routing between frontend and backend:
-
-### Proxy Rules
-
-```nginx
-# API requests → Backend (FastAPI)
-location /api/ {
-    proxy_pass http://machine-hub-api:8000;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-}
-
-# Webhook requests → Backend
-location /webhook/ {
-    proxy_pass http://machine-hub-api:8000;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-}
-
-# Static files → Frontend (React SPA)
-location / {
-    try_files $uri $uri/ /index.html;
-}
-```
 
 ### Key Features
 
@@ -472,16 +405,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 3. Make your changes
 4. Add tests if applicable
 5. Submit a pull request
-
-## 📞 Support
-
-For issues and questions:
-
-1. Check the troubleshooting section
-2. Review existing GitHub issues
-3. Create a new issue with detailed information
-4. Include logs and system information
-
----
-
-**Built with ❤️ for remote Windows machine management**

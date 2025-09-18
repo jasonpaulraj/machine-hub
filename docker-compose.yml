@@ -1,7 +1,7 @@
 services:
   db:
     image: mysql:8.0
-    container_name: control_db
+    container_name: db
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
@@ -13,13 +13,13 @@ services:
     ports:
       - "${DB_PORT:-3306}:3306"
     networks:
-      - control-network
+      - machine-hub-network
 
   api:
     build:
       context: ./machine-hub-api
       dockerfile: Dockerfile
-    container_name: machine-hub-api
+    container_name: api
     restart: unless-stopped
     env_file:
       - ./machine-hub-api/.env
@@ -28,7 +28,7 @@ services:
     depends_on:
       - db
     networks:
-      - control-network
+      - machine-hub-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       timeout: 10s
@@ -39,21 +39,21 @@ services:
     build:
       context: ./machine-hub-web
       dockerfile: Dockerfile
-    container_name: machine-hub-web
+    container_name: web
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-3000}:80"
     environment:
       - VITE_BACKEND_API_URL=${VITE_BACKEND_API_URL:-http://localhost:8000}
     depends_on:
-      machine-hub-api:
+      api:
         condition: service_healthy
     networks:
-      - control-network
+      - machine-hub-network
 
 volumes:
   db-data:
 
 networks:
-  control-network:
+  machine-hub-network:
     driver: bridge
