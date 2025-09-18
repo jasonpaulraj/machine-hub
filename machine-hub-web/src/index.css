@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --brand-500: 220 90% 56%;
+    --brand-600: 220 90% 46%;
+    --brand-700: 220 90% 36%;
+    --success-500: 142 76% 36%;
+    --success-600: 142 76% 26%;
+    --error-500: 0 84% 60%;
+    --error-600: 0 84% 50%;
+    --warning-500: 38 92% 50%;
+    --warning-600: 38 92% 40%;
+    --gray-50: 210 20% 98%;
+    --gray-100: 220 14% 96%;
+    --gray-200: 220 13% 91%;
+    --gray-300: 216 12% 84%;
+    --gray-400: 218 11% 65%;
+    --gray-500: 220 9% 46%;
+    --gray-600: 215 14% 34%;
+    --gray-700: 217 19% 27%;
+    --gray-800: 215 28% 17%;
+    --gray-900: 222 84% 5%;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: hsl(var(--gray-50));
+    color: hsl(var(--gray-900));
+  }
+  
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
+  }
+}
+
+@theme {
+  --color-brand: hsl(var(--brand-500));
+  --color-brand-dark: hsl(var(--brand-600));
+  --color-brand-darker: hsl(var(--brand-700));
+  --color-success: hsl(var(--success-500));
+  --color-success-dark: hsl(var(--success-600));
+  --color-error: hsl(var(--error-500));
+  --color-error-dark: hsl(var(--error-600));
+  --color-warning: hsl(var(--warning-500));
+  --color-warning-dark: hsl(var(--warning-600));
+  
+  --color-gray-50: hsl(var(--gray-50));
+  --color-gray-100: hsl(var(--gray-100));
+  --color-gray-200: hsl(var(--gray-200));
+  --color-gray-300: hsl(var(--gray-300));
+  --color-gray-400: hsl(var(--gray-400));
+  --color-gray-500: hsl(var(--gray-500));
+  --color-gray-600: hsl(var(--gray-600));
+  --color-gray-700: hsl(var(--gray-700));
+  --color-gray-800: hsl(var(--gray-800));
+  --color-gray-900: hsl(var(--gray-900));
+}
+
+/* Custom component styles */
+.btn {
+  @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+
+.btn-primary {
+  @apply bg-brand text-white hover:bg-brand-dark focus:ring-brand;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500;
+}
+
+.btn-success {
+  @apply bg-success text-white hover:bg-success-dark focus:ring-success;
+}
+
+.btn-error {
+  @apply bg-error text-white hover:bg-error-dark focus:ring-error;
+}
+
+.btn-warning {
+  @apply bg-warning text-white hover:bg-warning-dark focus:ring-warning;
+}
+
+.card {
+  @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+}
+
+.input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent;
+}
+
+.status-indicator {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.status-online {
+  @apply bg-green-100 text-green-800;
+}
+
+.status-offline {
+  @apply bg-red-100 text-red-800;
+}
+
+.status-unknown {
+  @apply bg-gray-100 text-gray-800;
+}
