@@ -37,6 +37,57 @@ def get_real_glances_data():
         return None
 
 
+def get_client_ips():
+    """Get both external and local IP addresses"""
+    external_ip = None
+    local_ip = None
+
+    # Get external IP from service
+    try:
+        response = requests.get('https://api.ipify.org', timeout=5)
+        if response.status_code == 200:
+            external_ip = response.text.strip()
+    except:
+        pass
+
+    # Get local IP using platform-specific commands
+    try:
+        import platform
+        system = platform.system().lower()
+
+        if system == 'windows':
+            # Use ipconfig on Windows
+            result = subprocess.run(
+                ['ipconfig'], capture_output=True, text=True, shell=True)
+            if result.returncode == 0:
+                lines = result.stdout.split('\n')
+                for line in lines:
+                    if 'IPv4 Address' in line or 'IP Address' in line:
+                        # Extract IP from lines like "   IPv4 Address. . . . . . . . . . . : 192.168.1.100"
+                        if ':' in line:
+                            ip = line.split(':')[-1].strip()
+                            if ip and ip != '127.0.0.1' and not ip.startswith('169.254'):
+                                local_ip = ip
+                                break
+        else:
+            # Use ifconfig on Linux/macOS
+            result = subprocess.run(
+                ['ifconfig'], capture_output=True, text=True)
+            if result.returncode == 0:
+                lines = result.stdout.split('\n')
+                for line in lines:
+                    if 'inet ' in line and '127.0.0.1' not in line and 'inet 169.254' not in line:
+                        # Extract IP address from line like "inet 192.168.1.100 netmask 0xffffff00 broadcast 192.168.1.255"
+                        parts = line.strip().split()
+                        if len(parts) >= 2:
+                            local_ip = parts[1]
+                            break
+    except:
+        local_ip = "127.0.0.1"
+
+    return external_ip, local_ip
+
+
 def send_to_webhook(data):
     """Send data to the webhook endpoint"""
     webhook_url = 'http://localhost:3009/webhook/glances'
@@ -44,6 +95,11 @@ def send_to_webhook(data):
         'Content-Type': 'application/json',
         'X-Secret': 'optional_secret_for_webhook'
     }
+
+    # Add client IPs to the data
+    external_ip, local_ip = get_client_ips()
+    data['external_ip'] = external_ip
+    data['local_ip'] = local_ip
 
     try:
         response = requests.post(

@@ -1,3 +1,4 @@
 machine-hub-api/.env
 .env
 machine-hub-web/.env
+machine-hub-api/app/__pycache__/__init__.cpython-311.pyc

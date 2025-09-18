@@ -14,6 +14,11 @@ services:
       - "${DB_PORT:-3306}:3306"
     networks:
       - machine-hub-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   api:
     build:
@@ -26,7 +31,8 @@ services:
     ports:
       - "${BACKEND_PORT:-8000}:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - machine-hub-network
     healthcheck:

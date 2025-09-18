@@ -170,26 +170,51 @@ async def receive_glances_data(
             detail="Invalid or missing API key"
         )
 
-    # Get client IP for access control
-    client_ip = request.client.host if request.client else None
-    if not client_ip:
+    # Parse the request body
+    try:
+        raw_data = await request.json()
+    except json.JSONDecodeError:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Unable to determine client IP address"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid JSON in request body"
         )
 
-    # Check if client IP is registered in machines table
-    allowed_machine = crud.get_machine_by_ip(db, ip_address=client_ip)
-    if not allowed_machine:
-        logger.warning(f"Webhook access denied for unregistered IP: {client_ip}")
+    # Get client IPs from payload
+    external_ip = raw_data.get('external_ip')
+    local_ip = raw_data.get('local_ip')
+
+    # Collect all available IPs to check
+    ips_to_check = [ip for ip in [external_ip, local_ip] if ip]
+
+    if not ips_to_check:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Access denied: IP {client_ip} not registered in machines table"
+            detail="Missing IP information in request payload"
         )
+
+    # Check if any of the client IPs are registered in machines table
+    allowed_machine = None
+    matched_ip = None
+
+    for ip in ips_to_check:
+        machine = crud.get_machine_by_ip(db, ip_address=ip)
+        if machine:
+            allowed_machine = machine
+            matched_ip = ip
+            break
+
+    if not allowed_machine:
+        logger.warning(
+            f"Webhook access denied for unregistered IPs: {ips_to_check}")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Access denied: None of the provided IPs {ips_to_check} are registered in machines table"
+        )
+
+    # Use the matched IP for logging
+    client_ip = matched_ip
 
     try:
-        # Parse the request body
-        raw_data = await request.json()
 
         # Parse the data
         parsed_data = parse_glances_data(raw_data)
