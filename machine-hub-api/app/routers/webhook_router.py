@@ -293,7 +293,9 @@ async def receive_glances_data(
             sensors_data=parsed_data.get("sensors_data"),
             alert_data=parsed_data.get("alert_data"),
             network_data=parsed_data.get("network_data"),
-            fs_data=parsed_data.get("fs_data")
+            fs_data=parsed_data.get("fs_data"),
+            # Source identifier
+            source="webhook"
         )
 
         # Store in database

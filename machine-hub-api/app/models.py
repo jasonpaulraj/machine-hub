@@ -81,6 +81,9 @@ class SystemSnapshot(Base):
     network_data = Column(JSON, nullable=True)  # Complete network array
     fs_data = Column(JSON, nullable=True)  # Complete filesystem array
 
+    # Source of the data (api for polling, webhook for webhook)
+    source = Column(String(20), nullable=False, default='api')
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationship to machine

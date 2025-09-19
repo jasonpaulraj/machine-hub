@@ -1,0 +1,46 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    default-libmysqlclient-dev \
+    pkg-config \
+    curl \
+    default-mysql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install development dependencies for hot reload
+RUN pip install watchfiles
+
+# Copy application code (this will be overridden by volume mount in development)
+COPY . .
+
+# Create initialization script
+RUN chmod +x app/init_db.py
+
+# Expose port
+EXPOSE 8000
+
+# Create startup script in /usr/local/bin (not affected by volume mount)
+RUN echo '#!/bin/bash\n\
+echo "Waiting for MySQL to be ready..."\n\
+while ! mysqladmin ping -h"$DB_HOST" -P"$DB_PORT" --silent; do\n\
+    echo "MySQL is unavailable - sleeping"\n\
+    sleep 2\n\
+done\n\
+echo "MySQL is up - executing command"\n\
+echo "Initializing database..."\n\
+cd /app && python -m app.init_db\n\
+echo "Starting application in development mode with hot reload..."\n\
+exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app' > /usr/local/bin/start-dev.sh
+
+RUN chmod +x /usr/local/bin/start-dev.sh
+
+# Run the startup script
+CMD ["/usr/local/bin/start-dev.sh"]

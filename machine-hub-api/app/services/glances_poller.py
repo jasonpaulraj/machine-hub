@@ -168,7 +168,9 @@ class GlancesPoller:
                 sensors_data=parsed_data.get("sensors_data"),
                 alert_data=parsed_data.get("alert_data"),
                 network_data=parsed_data.get("network_data"),
-                fs_data=parsed_data.get("fs_data")
+                fs_data=parsed_data.get("fs_data"),
+                # Source identifier
+                source="api"
             )
 
             # Store in database

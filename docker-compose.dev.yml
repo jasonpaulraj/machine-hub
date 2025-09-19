@@ -1,0 +1,80 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: db-dev
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-machinehub}
+      MYSQL_USER: ${MYSQL_USER:-machinehub}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
+    volumes:
+      - db-data-dev:/var/lib/mysql
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    networks:
+      - machine-hub-network-dev
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  api:
+    build:
+      context: ./machine-hub-api
+      dockerfile: Dockerfile.dev
+    container_name: api-dev
+    restart: unless-stopped
+    env_file:
+      - ./machine-hub-api/.env
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    volumes:
+      # Mount source code for hot reload
+      - ./machine-hub-api:/app
+      # Exclude node_modules and __pycache__ to avoid conflicts
+      - /app/__pycache__
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - machine-hub-network-dev
+    environment:
+      - PYTHONPATH=/app
+      - WATCHFILES_FORCE_POLLING=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  web:
+    build:
+      context: ./machine-hub-web
+      dockerfile: Dockerfile.dev
+    container_name: web-dev
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    volumes:
+      # Mount source code for hot reload
+      - ./machine-hub-web:/app
+      # Exclude node_modules to avoid conflicts
+      - /app/node_modules
+    environment:
+      - VITE_BACKEND_API_URL=http://localhost:${BACKEND_PORT:-8000}
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - machine-hub-network-dev
+
+volumes:
+  db-data-dev:
+
+networks:
+  machine-hub-network-dev:
+    driver: bridge

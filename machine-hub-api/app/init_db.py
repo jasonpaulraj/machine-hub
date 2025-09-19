@@ -211,7 +211,7 @@ def seed_sample_data(engine):
                     name="3900x",
                     hostname="JP",
                     ip_address="192.168.100.10",
-                    mac_address="50-E0-8B-4E-4E",
+                    mac_address="50-E0-85-8B-4E-4E",
                     ha_entity_id=None,
                     description=None,
                     is_active=True

@@ -117,6 +117,9 @@ class SystemSnapshotBase(BaseModel):
     network_data: Optional[List[Dict]] = None  # Complete network array
     fs_data: Optional[List[Dict]] = None  # Complete filesystem array
 
+    # Source of the data
+    source: Optional[str] = Field(default="api", max_length=20)
+
 
 class SystemSnapshotCreate(SystemSnapshotBase):
     machine_id: int
@@ -126,6 +129,7 @@ class SystemSnapshot(SystemSnapshotBase):
     id: int
     machine_id: int
     created_at: datetime
+    source: Optional[str] = Field(default="api", max_length=20)
 
     class Config:
         from_attributes = True

@@ -92,6 +92,9 @@ docker-compose build machine-hub-api
 # Rebuild with no cache
 docker-compose build --no-cache
 
+# Rebuild and start all services
+docker-compose build --no-cache && docker-compose up -d
+
 # Build and start specific service
 docker-compose up --build machine-hub-web
 ```
