@@ -1,0 +1,149 @@
+🚀 Starting Real Glances Data Sender
+📊 Collecting and sending real system metrics...
+🔗 Using webhook URL: http://192.168.100.72:8009/webhook/glances
+🌍 Environment: production
+⏱️ Interval: 60 seconds
+Press Ctrl+C to stop
+
+[DEBUG] Attempting powermetrics with sudo...
+[DEBUG] Running command: sudo -S powermetrics --samplers battery,network,disk,cpu_power,thermal,gpu_power -n 1
+[DEBUG] Process return code: 0
+[DEBUG] STDERR: None
+[DEBUG] STDOUT length: 3852 characters
+[DEBUG] First 1000 chars of STDOUT:
+Machine model: Mac14,7
+OS version: 24C101
+Boot arguments: 
+Boot time: Mon Aug 18 20:57:47 2025
+
+
+
+*** Sampled system activity (Sat Sep 20 01:20:02 2025 +0800) (5004.30ms elapsed) ***
+
+
+
+**** Battery and backlight usage ****
+
+Battery: percent_charge: 100
+
+
+**** Network activity ****
+
+out: 31.17 packets/s, 4727.14 bytes/s
+in:  49.76 packets/s, 19491.04 bytes/s
+
+
+**** Disk activity ****
+
+read: 1559.06 ops/s 15052.15 KBytes/s
+write: 210.22 ops/s 2987.51 KBytes/s
+
+**** Processor usage ****
+
+E-Cluster HW active frequency: 2419 MHz
+E-Cluster HW active residency:  91.74% (600 MHz:   0% 912 MHz: .18% 1284 MHz: .03% 1752 MHz: .20% 2004 MHz: .04% 2256 MHz: .04% 2424 MHz:  91%)
+E-Cluster idle residency:   8.26%
+CPU 0 frequency: 2418 MHz
+CPU 0 active residency:  53.18% (600 MHz:   0% 912 MHz: .10% 1284 MHz: .01% 1752 MHz: .21% 2004 MHz: .04% 2256 MHz: .04% 2424 MHz:  53%)
+CPU 0 idle residency:  46.82%
+CPU 1 frequency: 2418 MHz
+CPU 1 active residency:  41.39% (600 MHz:   0% 912 MHz: .05% 1284 MHz: .
+[DEBUG] Processing 81 lines of output
+[DEBUG] Line 0: Machine model: Mac14,7
+[DEBUG] Line 1: OS version: 24C101
+[DEBUG] Line 2: Boot arguments:
+[DEBUG] Line 3: Boot time: Mon Aug 18 20:57:47 2025
+[DEBUG] Line 4: 
+[DEBUG] Line 5: 
+[DEBUG] Line 6: 
+[DEBUG] Line 7: *** Sampled system activity (Sat Sep 20 01:20:02 2025 +0800) (5004.30ms elapsed) ***
+[DEBUG] Line 8: 
+[DEBUG] Line 9: 
+[DEBUG] Line 10: 
+[DEBUG] Line 11: **** Battery and backlight usage ****
+[DEBUG] Entering section: battery and backlight usage
+[DEBUG] Line 12: 
+[DEBUG] Line 13: Battery: percent_charge: 100
+[DEBUG] Line 14: 
+[DEBUG] Line 15: 
+[DEBUG] Line 16: **** Network activity ****
+[DEBUG] Entering section: network activity
+[DEBUG] Line 17: 
+[DEBUG] Line 18: out: 31.17 packets/s, 4727.14 bytes/s
+[DEBUG] Line 19: in:  49.76 packets/s, 19491.04 bytes/s
+[DEBUG] Line 20: 
+[DEBUG] Line 21: 
+[DEBUG] Line 22: **** Disk activity ****
+[DEBUG] Entering section: disk activity
+[DEBUG] Line 23: 
+[DEBUG] Line 24: read: 1559.06 ops/s 15052.15 KBytes/s
+[DEBUG] Line 25: write: 210.22 ops/s 2987.51 KBytes/s
+[DEBUG] Line 26: 
+[DEBUG] Line 27: **** Processor usage ****
+[DEBUG] Entering section: processor usage
+[DEBUG] Line 28: 
+[DEBUG] Line 29: E-Cluster HW active frequency: 2419 MHz
+[DEBUG] Line 30: E-Cluster HW active residency:  91.74% (600 MHz:   0% 912 MHz: .18% 1284 MHz: .03% 1752 MHz: .20% 2004 MHz: .04% 2256 MHz: .04% 2424 MHz:  91%)
+[DEBUG] Line 31: E-Cluster idle residency:   8.26%
+[DEBUG] Line 32: CPU 0 frequency: 2418 MHz
+[DEBUG] Line 33: CPU 0 active residency:  53.18% (600 MHz:   0% 912 MHz: .10% 1284 MHz: .01% 1752 MHz: .21% 2004 MHz: .04% 2256 MHz: .04% 2424 MHz:  53%)
+[DEBUG] Line 34: CPU 0 idle residency:  46.82%
+[DEBUG] Line 35: CPU 1 frequency: 2418 MHz
+[DEBUG] Line 36: CPU 1 active residency:  41.39% (600 MHz:   0% 912 MHz: .05% 1284 MHz: .02% 1752 MHz: .20% 2004 MHz: .04% 2256 MHz: .04% 2424 MHz:  41%)
+[DEBUG] Line 37: CPU 1 idle residency:  58.61%
+[DEBUG] Line 38: CPU 2 frequency: 2416 MHz
+[DEBUG] Line 39: CPU 2 active residency:  29.44% (600 MHz:   0% 912 MHz: .05% 1284 MHz: .01% 1752 MHz: .20% 2004 MHz: .04% 2256 MHz: .04% 2424 MHz:  29%)
+[DEBUG] Line 40: CPU 2 idle residency:  70.56%
+[DEBUG] Line 41: CPU 3 frequency: 2414 MHz
+[DEBUG] Line 42: CPU 3 active residency:  23.86% (600 MHz:   0% 912 MHz: .05% 1284 MHz: .00% 1752 MHz: .20% 2004 MHz: .04% 2256 MHz: .04% 2424 MHz:  24%)
+[DEBUG] Line 43: CPU 3 idle residency:  76.14%
+[DEBUG] Line 44: 
+[DEBUG] Line 45: P-Cluster HW active frequency: 889 MHz
+[DEBUG] Line 46: P-Cluster HW active residency:  53.34% (660 MHz:  44% 924 MHz: .15% 1188 MHz: 1.9% 1452 MHz: 1.4% 1704 MHz: 1.1% 1968 MHz: .70% 2208 MHz: .66% 2400 MHz: .64% 2568 MHz: .65% 2724 MHz: .64% 2868 MHz: .29% 2988 MHz: .19% 3096 MHz: .16% 3204 MHz: .42% 3324 MHz: .24% 3408 MHz: .06% 3504 MHz:   0%)
+[DEBUG] Line 47: P-Cluster idle residency:  46.66%
+[DEBUG] Line 48: CPU 4 frequency: 2074 MHz
+[DEBUG] Line 49: CPU 4 active residency:   9.22% (660 MHz: .17% 924 MHz: .03% 1188 MHz: 1.9% 1452 MHz: 1.2% 1704 MHz: 1.1% 1968 MHz: .61% 2208 MHz: .62% 2400 MHz: .51% 2568 MHz: .54% 2724 MHz: .59% 2868 MHz: .26% 2988 MHz: .17% 3096 MHz: .23% 3204 MHz: .26% 3324 MHz: .21% 3408 MHz: .12% 3504 MHz: .68%)
+[DEBUG] Line 50: CPU 4 idle residency:  90.78%
+[DEBUG] Line 51: CPU 5 frequency: 2195 MHz
+[DEBUG] Line 52: CPU 5 active residency:   5.22% (660 MHz: .11% 924 MHz: .02% 1188 MHz: .73% 1452 MHz: .66% 1704 MHz: .48% 1968 MHz: .44% 2208 MHz: .48% 2400 MHz: .44% 2568 MHz: .32% 2724 MHz: .36% 2868 MHz: .15% 2988 MHz: .14% 3096 MHz: .02% 3204 MHz: .04% 3324 MHz: .05% 3408 MHz: .00% 3504 MHz: .77%)
+[DEBUG] Line 53: CPU 5 idle residency:  94.78%
+[DEBUG] Line 54: CPU 6 frequency: 2194 MHz
+[DEBUG] Line 55: CPU 6 active residency:   3.25% (660 MHz: .05% 924 MHz: .01% 1188 MHz: .31% 1452 MHz: .49% 1704 MHz: .39% 1968 MHz: .35% 2208 MHz: .39% 2400 MHz: .16% 2568 MHz: .21% 2724 MHz: .23% 2868 MHz: .07% 2988 MHz: .01% 3096 MHz: .03% 3204 MHz: .03% 3324 MHz: .07% 3408 MHz: .00% 3504 MHz: .46%)
+[DEBUG] Line 56: CPU 6 idle residency:  96.75%
+[DEBUG] Line 57: CPU 7 frequency: 2226 MHz
+[DEBUG] Line 58: CPU 7 active residency:   1.42% (660 MHz: .04% 924 MHz: .01% 1188 MHz: .25% 1452 MHz: .26% 1704 MHz: .09% 1968 MHz: .03% 2208 MHz: .16% 2400 MHz: .02% 2568 MHz: .05% 2724 MHz: .08% 2868 MHz: .02% 2988 MHz: .02% 3096 MHz: .01% 3204 MHz: .01% 3324 MHz: .01% 3408 MHz: .00% 3504 MHz: .37%)
+[DEBUG] Line 59: CPU 7 idle residency:  98.58%
+[DEBUG] Line 60: 
+[DEBUG] Line 61: CPU Power: 756 mW
+[DEBUG] Found CPU Power: 756.0 mW
+[DEBUG] Line 62: GPU Power: 4 mW
+[DEBUG] Found GPU Power: 4.0 mW
+[DEBUG] Line 63: ANE Power: 0 mW
+[DEBUG] Found ANE Power: 0.0 mW
+[DEBUG] Line 64: Combined Power (CPU + GPU + ANE): 761 mW
+[DEBUG] Found Combined Power: 761.0 mW
+[DEBUG] Line 65: 
+[DEBUG] Line 66: 
+[DEBUG] Line 67: **** Thermal pressure ****
+[DEBUG] Entering section: thermal pressure
+[DEBUG] Line 68: 
+[DEBUG] Line 69: Current pressure level: Nominal
+[DEBUG] Thermal pressure level: Nominal
+[DEBUG] Line 70: 
+[DEBUG] Line 71: **** GPU usage ****
+[DEBUG] Entering section: gpu usage
+[DEBUG] Line 72: 
+[DEBUG] Line 73: GPU HW active frequency: 444 MHz
+[DEBUG] Found GPU Frequency: 444.0 MHz
+[DEBUG] Line 74: GPU HW active residency:   1.89% (444 MHz: 1.9% 612 MHz:   0% 808 MHz:   0% 968 MHz:   0% 1110 MHz:   0% 1236 MHz:   0% 1338 MHz:   0% 1398 MHz:   0%)
+[DEBUG] Found GPU Active Residency: 1.89%
+[DEBUG] Line 75: GPU SW requested state: (P1 : 100% P2 :   0% P3 :   0% P4 :   0% P5 :   0% P6 :   0% P7 :   0% P8 :   0%)
+[DEBUG] Line 76: GPU SW state: (SW_P1 :   0% SW_P2 :   0% SW_P3 :   0% SW_P4 :   0% SW_P5 :   0% SW_P6 :   0% SW_P7 :   0% SW_P8 :   0%)
+[DEBUG] Line 77: GPU idle residency:  98.11%
+[DEBUG] Line 78: GPU Power: 4 mW
+[DEBUG] Found GPU Power: 4.0 mW
+[DEBUG] Line 79: 
+[DEBUG] Line 80: 
+✅ [01:20:02] Data sent successfully
+   Host: scismic.local | CPU: 34.3% | Memory: 82.5%
+   Snapshot ID: 1888
