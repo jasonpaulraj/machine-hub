@@ -9,6 +9,8 @@ import json
 import time
 import subprocess
 import sys
+import os
+import argparse
 from datetime import datetime
 
 
@@ -88,13 +90,29 @@ def get_client_ips():
     return external_ip, local_ip
 
 
-def send_to_webhook(data):
-    """Send data to the webhook endpoint"""
-    webhook_url = 'http://localhost:3009/webhook/glances'
+def send_to_webhook(data, webhook_url=None, api_secret=None, environment=None):
+    """Send data to webhook endpoint"""
+    # Use command line arguments or environment variables
+    env = environment or os.getenv('ENV', 'development')
+
+    if not webhook_url:
+        # Use environment-based URL selection
+        # Development: Use proxy through web service (port 3009)
+        # Production: Use direct API access (port 8009)
+        if env.lower() == 'production':
+            webhook_url = os.getenv('GLANCES_WEBHOOK_URL_PROD')
+        else:
+            webhook_url = os.getenv('GLANCES_WEBHOOK_URL_DEV')
+
+    secret = api_secret or os.getenv('GLANCES_SECRET')
+
     headers = {
         'Content-Type': 'application/json',
-        'X-Secret': 'optional_secret_for_webhook'
+        'X-Secret': secret
     }
+    if not webhook_url or not secret:
+        print("❌ Webhook URL or API key not configured")
+        return None, "Webhook URL or API key not configured"
 
     # Add client IPs to the data
     external_ip, local_ip = get_client_ips()
@@ -109,12 +127,35 @@ def send_to_webhook(data):
         return None, str(e)
 
 
+def parse_arguments():
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(
+        description='Send real Glances data to webhook endpoint')
+    parser.add_argument('--webhook-url', '-u', type=str,
+                        help='Webhook URL (overrides environment variable)')
+    parser.add_argument('--api-secret', '-s', type=str,
+                        help='API secret key (overrides environment variable)')
+    parser.add_argument('--environment', '-e', type=str, choices=[
+                        'development', 'production'], help='Environment (development/production)')
+    parser.add_argument('--interval', '-i', type=int, default=5,
+                        help='Interval between sends in seconds (default: 5)')
+    return parser.parse_args()
+
+
 def main():
+    args = parse_arguments()
+
     print("🚀 Starting Real Glances Data Sender")
     print("📊 Collecting and sending real system metrics...")
+    if args.webhook_url:
+        print(f"🔗 Using webhook URL: {args.webhook_url}")
+    if args.environment:
+        print(f"🌍 Environment: {args.environment}")
+    if args.interval:
+        print(f"⏱️ Interval: {args.interval} seconds")
     print("Press Ctrl+C to stop\n")
 
-    interval = 5  # Send data every 5 seconds
+    interval = args.interval
 
     try:
         while True:
@@ -123,7 +164,12 @@ def main():
 
             if glances_data:
                 # Send to webhook
-                status_code, response = send_to_webhook(glances_data)
+                status_code, response = send_to_webhook(
+                    glances_data,
+                    webhook_url=args.webhook_url,
+                    api_secret=args.api_secret,
+                    environment=args.environment
+                )
 
                 timestamp = datetime.now().strftime('%H:%M:%S')
 
